@@ -15,7 +15,9 @@
     "prompt-sync": "^4.2.0"
   },
   "devDependencies": {
+    "@types/jsdom": "^21.1.1",
     "@types/node": "^18.15.10",
+    "jsdom": "^21.1.1",
     "typescript": "^5.0.2"
   }
 }

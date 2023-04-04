@@ -9,6 +9,9 @@ import { ConsolePrinter } from './services/console-printer.service';
 import { Differ } from './services/differ.service';
 import {HtmlGeneratorService} from './services/html-generator.service'
 import path from 'path';
+import { HtmlVisualDiff } from './services/html-visual-differ.service';
+
+import { JSDOM } from 'jsdom'
 
 var timeAppStart = new Date().getTime();
 
@@ -21,38 +24,55 @@ program
     
 const options = program.opts();
 
-// const source: ComparableDocument = new ComparableDocument(
-//     loadFile("././test-pages/1-src.html").toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
-// )
+const source: string =(
+    loadFile("C:\\old.html").toString())
 
-// const dest: ComparableDocument = new ComparableDocument(
-//     loadFile("././test-pages/1-dst.html").toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
-// )
 
-if (options.compare) {
+const dest: string =
+    loadFile("C:\\new.html").toString()
 
-    const paths: string[] = options.compare as string[];
-    if (!paths || paths.length < 2) {
-       throw new Error(`Не указан путь(и) до файлов ${paths}`);
-    }
+const sourceFileJSdom = new JSDOM(readFileSync("././test-pages/1-src.html").toString());
+const destFileJSdom = new JSDOM(readFileSync("././test-pages/1-dst.html").toString());
+const SourceBody = sourceFileJSdom.window.document.querySelector('body');
+const DestBody = destFileJSdom.window.document.querySelector('body');
 
-    const source: ComparableDocument = new ComparableDocument(
-        loadFile(paths[0]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
-    )
+const styles = destFileJSdom.window.document.querySelector('html').innerHTML.split("<body")[0];
+var t = new HtmlVisualDiff(SourceBody.innerHTML, DestBody.innerHTML);
+var result: string = styles;
+var tad = t.build();
+console.log(result)
+tad = tad.replaceAll("<ins>", "")
+tad = tad.replaceAll("</ins>", "")
+tad = tad.replaceAll("<del>", "")
+tad = tad.replaceAll("</del>", "")
+tad = tad.replaceAll(",", "")
+result += tad;
+createResultHtml(result, null, 3);
+
+// if (options.compare) {
+
+//     const paths: string[] = options.compare as string[];
+//     if (!paths || paths.length < 2) {
+//        throw new Error(`Не указан путь(и) до файлов ${paths}`);
+//     }
+
+//     const source: ComparableDocument = new ComparableDocument(
+//         loadFile(paths[0]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
+//     )
     
-    const dest: ComparableDocument = new ComparableDocument(
-        loadFile(paths[1]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
-    )
+//     const dest: ComparableDocument = new ComparableDocument(
+//         loadFile(paths[1]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
+//     )
     
-    const differ = new Differ(source, dest);
+//     const differ = new Differ(source, dest);
 
-    var lines = differ.getViewableLines();
-    var timeAppEnd = new Date().getTime();
-    createResultHtml(HtmlGeneratorService.createHtmlView(lines, timeAppStart, timeAppEnd, paths[0], paths[1]),lines,timeAppEnd);
-}
-else {
-    program.help();
-}
+//     var lines = differ.getViewableLines();
+//     var timeAppEnd = new Date().getTime();
+//     createResultHtml(HtmlGeneratorService.createHtmlView(lines, timeAppStart, timeAppEnd, paths[0], paths[1]),lines,timeAppEnd);
+// }
+// else {
+//     program.help();
+// }
 
 function loadFile(filePath: string): string {
     try {
@@ -67,18 +87,18 @@ function loadFile(filePath: string): string {
 async function createResultHtml(content: string, lines: ViewableLine[], endTime: number) {
     // content += `<span>Время работы программы заняло: ${timeAppEnd - timeAppStart} миллисекунд</span>`
     fs.writeFile(__dirname + `/result.html`, content, (error) => { console.error(error) });
-    console.log(`Итоговый файл «result.html» сохранен в директорию ${__dirname}\\result.html. Время работы приложения заняло ${timeAppEnd - timeAppStart} мс`);
+    console.log(`Итоговый файл «result.html» сохранен в директорию ${__dirname}\\result.html. Время работы приложения заняло ${ timeAppStart} мс`);
     
-    const prompt = require("prompt-sync")({ sigint: true });
-    const isShowInTerminal = prompt("Вы хотите отобразить изменения в терминале (y/n)");
+ //   const prompt = require("prompt-sync")({ sigint: true });
+    //const isShowInTerminal = prompt("Вы хотите отобразить изменения в терминале (y/n)");
 
-    if (isShowInTerminal === 'y') {
-        const printer = new ConsolePrinter();
-        printer.print(lines.reverse());
-    }
-    else {
-        return;
-    }
+    // if (isShowInTerminal === 'y') {
+    //     const printer = new ConsolePrinter();
+    //     printer.print(lines.reverse());
+    // }
+    // else {
+    //     return;
+    // }
     
    
 }
