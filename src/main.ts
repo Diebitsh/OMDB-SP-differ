@@ -41,40 +41,20 @@ const final = differDomService.DOMHandler();
 
 if (options.compare) {
 
-const sourceFileJSdom = new JSDOM(readFileSync("././test-pages/1-src.html").toString());
-const destFileJSdom = new JSDOM(readFileSync("././test-pages/1-dst.html").toString());
-const SourceBody = sourceFileJSdom.window.document.querySelector('body');
-const DestBody = destFileJSdom.window.document.querySelector('body');
+    const paths: string[] = options.compare as string[];
+    if (!paths || paths.length < 2) {
+       throw new Error(`Не указан путь(и) до файлов ${paths}`);
+    }
 
-const styles = destFileJSdom.window.document.querySelector('html').innerHTML.split("<body")[0];
-var t = new HtmlVisualDiff(SourceBody.innerHTML, DestBody.innerHTML);
-var result: string = styles;
-var tad = t.build();
-console.log(result)
-tad = tad.replaceAll("<ins>", "")
-tad = tad.replaceAll("</ins>", "")
-tad = tad.replaceAll("<del>", "")
-tad = tad.replaceAll("</del>", "")
-tad = tad.replaceAll(",", "")
-result += tad;
-createResultHtml(result, null, 3);
-
-// if (options.compare) {
-
-//     const paths: string[] = options.compare as string[];
-//     if (!paths || paths.length < 2) {
-//        throw new Error(`Не указан путь(и) до файлов ${paths}`);
-//     }
-
-//     const source: ComparableDocument = new ComparableDocument(
-//         loadFile(paths[0]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
-//     )
+    const source: ComparableDocument = new ComparableDocument(
+        loadFile(paths[0]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
+    )
     
-//     const dest: ComparableDocument = new ComparableDocument(
-//         loadFile(paths[1]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
-//     )
+    const dest: ComparableDocument = new ComparableDocument(
+        loadFile(paths[1]).toString().split('\n').map( (line, index) => new Line(line.replace('\r', ''), index+1) )
+    )
     
-//     const differ = new Differ(source, dest);
+    const differ = new Differ(source, dest);
 
     var lines = differ.getViewableLines();
     var timeAppEnd = new Date().getTime();
@@ -116,22 +96,19 @@ async function createResultHtmlFileDiffer(content: string, lines: ViewableLine[]
     fs.writeFile(__dirname + `/result.html`, content, (error) => { console.error(error) });
     console.log(`Итоговый файл «result.html» сохранен в директорию ${__dirname}\\result.html. Время работы приложения заняло ${endTime - timeAppStart} мс`);
     
- //   const prompt = require("prompt-sync")({ sigint: true });
-    //const isShowInTerminal = prompt("Вы хотите отобразить изменения в терминале (y/n)");
+    const prompt = require("prompt-sync")({ sigint: true });
+    const isShowInTerminal = prompt("Вы хотите отобразить изменения в терминале (y/n)");
 
-    // if (isShowInTerminal === 'y') {
-    //     const printer = new ConsolePrinter();
-    //     printer.print(lines.reverse());
-    // }
-    // else {
-    //     return;
-    // }
+    if (isShowInTerminal === 'y') {
+        const printer = new ConsolePrinter();
+        printer.print(lines.reverse());
+    }
+    else {
+        return;
+    }
 }
 
 async function createResultHtmlDomDiffer(content: string, endTime: number) {
     fs.writeFile(__dirname + `/compareresult.html`, content, (error) => { console.error(error) });
     console.log(`Итоговый файл compareresult.html» сохранен в директорию ${__dirname}\\compareresult.html. Время работы приложения заняло ${endTime - timeAppStart} мс`);
 }
-
-
-
