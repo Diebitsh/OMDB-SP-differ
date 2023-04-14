@@ -3,7 +3,6 @@
     import DomCompare from "./DomCompare.svelte";
     import FileCompare from "./FileCompare.svelte";
 
-
     //import { sourceFile } from "./UploadFiles.svelte";
 
     const views = [UploadFiles, DomCompare, FileCompare];
@@ -182,8 +181,8 @@
                     <div class="omdb-stat-block omdb-files-name">
                         <p class="stat-block-name">Файлы</p>
                         <div class="omdb-stat-block-container">
-                            <p>{#if sourceFile}{sourceFile[0].name}{:else }SOURCE-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
-                            <p>{#if destFile}{destFile[0].name}{:else }DESTINATION-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                            <p class="omdb-stat-file-names">{#if sourceFile}SOURCE: {sourceFile[0].name}{:else }SOURCE-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                            <p class="omdb-stat-file-names">{#if destFile}DESTINATION: {destFile[0].name}{:else }DESTINATION-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
                         </div>
                     </div>
                     <div class="omdb-stat-block omdb-modified-stat">
@@ -308,8 +307,8 @@
     }
 
     .omd-button-area button img {
-        height: 25px;
-        width: 25px;
+        height: 30px;
+        width: auto;
     }
 
     .omdb-stat-toggle {
@@ -391,10 +390,11 @@
     .omdb-stat-block-container {
         width: 100%;
         min-height: 75%;
-        background-color: aqua;
+        background-color: rgba(0, 255, 255, 0);
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;
+        align-items: center;
     }
 
     .omdb-stat-block::-webkit-scrollbar-track
@@ -427,5 +427,15 @@
 
     .omdb-time-stat {
         height: 10%;
+    }
+
+    .omdb-stat-file-names {
+        font-weight: bold;
+        width: 100%;
+        font-size: 12px;
+        margin-left: 10px;
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 20px;
     }
 </style>
