@@ -16,6 +16,7 @@
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <img class="file-icon" src="./static/add-file.svg" height="150px" width="150px" />
                 <label for="src">SOURCE FILE</label>
+                <p>{#if sourceFile}{sourceFile[0].name}{:else }ЗАГРУЗИТЕ ФАЙЛ{/if}</p>
             </label>
         </div>
 
@@ -25,6 +26,7 @@
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <img class="file-icon" src="./static/add-file.svg" height="150px" width="150px" />
                 <label for="dest">DESTINATION FILE</label>
+                <p>{#if destFile}{destFile[0].name}{:else }ЗАГРУЗИТЕ ФАЙЛ{/if}</p>
             </label>
         </div>
     
@@ -40,6 +42,8 @@
         align-items: center;
         justify-content: flex-start;
         flex-flow: column;
+        background: radial-gradient(#00000013 5%, transparent 20%) 0 0, radial-gradient(rgb(0, 0, 0) 1%, transparent 1%) 50px 50px;
+        background-size: 8px 8px;
     }
 
     .omdb-main-upload-files {
@@ -67,6 +71,12 @@
         background-color: #0F62FE;
         border-radius: 5px;
         box-shadow: 0px 4px 14px -2px rgba(0, 0, 0, 0.67);
+        transition: 0.3s ease-in-out;
+    }
+
+    .input-file:hover {
+        cursor: pointer;
+        transform: translateY(-10px);
     }
 
     .input-file input[type=file] {
@@ -76,6 +86,10 @@
         display: block;
         width: 0;
         height: 0;
+    }
+
+    .input-file label, p {
+        margin-top: 10px;
     }
 
 </style>

@@ -75,7 +75,8 @@
 
     //преобразовать файлы в плэинтекст
     function comapreDomWithStyles(isWithStyle) {
-        if (sourceFile === null && destFile === null) {
+        if (sourceFile === null || destFile === null) {
+            document.getElementById("validate").style.display = "block"
             return;
         }
         else {
@@ -91,7 +92,8 @@
     }
 
     function comapreFiles() {
-        if (sourceFile === null && destFile === null) {
+        if (sourceFile === null || destFile === null) {
+            document.getElementById("validate").style.display = "block"
             return;
         }
         else {
@@ -104,6 +106,10 @@
 
             compareFilesRequest('http://localhost:80/api/compare-text');
         }
+    }
+
+    function closeValidate() {
+        document.getElementById("validate").style.display = "none"
     }
 
     function toggleStatistics() {
@@ -135,6 +141,14 @@
     </div>
     
     {@html resultHtml} -->
+
+    <div  id="validate" style="display: none;" >
+        <div class="omdb-validate">
+            <p>Файлы не загружены</p>
+            <span><img on:click={closeValidate} class="file-icon" src="./static/close-btn.svg" /></span>
+        </div>
+    </div>
+
     <div class="omdb-work-area-wrapper">
         <div class="omdb-buttons-area-wrapper">
             <div class="omd-button-area">
@@ -147,14 +161,17 @@
                     </button>
                 </div>
                 <div class="omdb-main-inputs">
-                    <button on:click={comapreDomWithStyles(true)}>
+                    <button class="omdb-diff-func" on:click={comapreDomWithStyles}>
                         <img class="file-icon" src="./static/compare-dom.svg" />
+                        <p></p>
                     </button>
-                    <button on:click={comapreDomWithStyles(false)}>
+                    <button class="omdb-diff-func" on:click={comapreDomWithStyles}>
                         <img class="file-icon" src="./static/compare-no-styles.svg"/>
+                        <p></p>
                     </button>
-                    <button on:click={comapreFiles}>
+                    <button class="omdb-diff-func" on:click={comapreFiles}>
                         <img class="file-icon" src="./static/code.svg" />
+                        <p></p>
                     </button>
                 </div>
             </div>
@@ -163,19 +180,35 @@
             <div class="omdb-statistics-wrapper" id="stat-menu">
                 <div class="omdb-statistics">
                     <div class="omdb-stat-block omdb-files-name">
-    
+                        <p class="stat-block-name">Файлы</p>
+                        <div class="omdb-stat-block-container">
+                            <p>{#if sourceFile}{sourceFile[0].name}{:else }SOURCE-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                            <p>{#if destFile}{destFile[0].name}{:else }DESTINATION-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                        </div>
                     </div>
                     <div class="omdb-stat-block omdb-modified-stat">
-
+                        <p class="stat-block-name">Изменено</p>
+                        <div class="omdb-stat-block-container">
+                            
+                        </div>
                     </div>
                     <div class="omdb-stat-block omdb-added-stat">
-
+                        <p class="stat-block-name">Добавлено</p>
+                        <div class="omdb-stat-block-container">
+                            
+                        </div>
                     </div>
                     <div class="omdb-stat-block omdb-delted-stat">
-
+                        <p class="stat-block-name">Удалено</p>
+                        <div class="omdb-stat-block-container">
+                            
+                        </div>
                     </div>
                     <div class="omdb-stat-block omdb-time-stat">
-
+                        <p class="stat-block-name">Дополнительно</p>
+                        <div class="omdb-stat-block-container">
+                            
+                        </div>
                     </div>
                 </div>
 
@@ -206,6 +239,27 @@
         align-items: center;
         justify-content: center;
         flex-flow: column;
+        background-color: #ffffff;
+    }
+
+    .omdb-validate {
+        width: 95%;
+        background-color: #fed6d6;
+        color: black;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 20px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .omdb-validate span img {
+        height: 20px;
+        width: auto;
+        cursor: pointer;
     }
 
     .omdb-work-area-wrapper {
@@ -222,7 +276,7 @@
         align-items: center;
         justify-content: center;
         border-radius: 5px 5px 0px 0px;
-        background-color: #0F62FE;
+        background-color: #ffffff;
     }
 
     .omd-button-area {
@@ -243,7 +297,14 @@
         justify-content: center;
         background-color: white;
         border: 1px solid #0F62FE;
-        border-radius: 5px;
+        border: none;
+        border-radius: 3px;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    .omdb-diff-func:hover {
+        transform: translateY(-4px);
     }
 
     .omd-button-area button img {
@@ -271,6 +332,12 @@
 
     .omdb-main-inputs button {
         margin-right: 120px;
+        text-align: left;
+    }
+
+    .omdb-main-inputs p {
+        margin-left: 20px;
+        transition: 0.3s ease-in;
     }
 
     .omdb-main-area {
@@ -282,18 +349,21 @@
 
     .omdb-statistics-wrapper {
         min-height: 100%;
-        background-color: cadetblue;
+        background-color: #ffffff;
         width: 0%;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: 0.3s ease-out;
+        transition: 0.01s ease-out;
+        box-shadow:  8px 0px 6px -10px rgba(0, 0, 0, 0.84);
+        color: #696969;
+
     }
 
     .omdb-statistics {
         width: 95%;
         height: 99%;
-        background-color: rgb(221, 221, 221);
+        background-color: rgba(221, 221, 221, 0);
         display: flex;
         align-items: center;
         justify-content: flex-start;
@@ -303,10 +373,51 @@
     .omdb-stat-block {
         height: 25%;
         width: 100%;
-        background-color: blueviolet;
+        background-color: rgba(255, 255, 255, 0);
         margin: 1px;
         overflow-x: hidden;
+    }
+
+    .stat-block-name {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 5px;
+        padding: 5px;
+        border-top: 1px solid rgb(226, 226, 226);
+        border-bottom: 1px solid rgb(226, 226, 226);
+        font-weight: 600;
+    }
+
+    .omdb-stat-block-container {
+        width: 100%;
+        min-height: 75%;
+        background-color: aqua;
         overflow-y: auto;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .omdb-stat-block::-webkit-scrollbar-track
+    {
+        border-radius: 10px;
+        background-color: #f5f5f500;
+        width: 5px;
+        height: 10px;
+    }
+
+    .omdb-stat-block::-webkit-scrollbar
+    {
+        width: 12px;
+        background-color: #f5f5f500;
+        width: 5px;
+        height: 10px;
+        cursor: pointer;
+    }
+
+    .omdb-stat-block::-webkit-scrollbar-thumb
+    {
+        border-radius: 10px;
+        background-color: rgba(226, 226, 226, 0.349)
     }
 
     .omdb-files-name {

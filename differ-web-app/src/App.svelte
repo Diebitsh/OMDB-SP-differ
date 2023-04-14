@@ -18,7 +18,7 @@
     header {
         background-color: blue;
         width: 100%;
-        height: 90px;
+        height: 50px;
         color: white;
     }
     footer {
