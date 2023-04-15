@@ -13,6 +13,35 @@
     function makeDesktop() {
         document.getElementById("main-view").style.width = "100%";
     }
+
+    const changedElems = document.querySelectorAll('[changedelement]');
+    changedElems.forEach( x => {
+        const curVal =  x.innerText
+        x.addEventListener('mouseover', function handleMouseOver() {
+        x.innerText = x.getAttribute('changedelement');});
+        x.addEventListener('mouseout', function handleMouseOver() {
+        x.innerText = curVal;});
+    });
+
+    const addedElelemnt = document.querySelectorAll('[newelement]');
+    addedElelemnt.forEach( x => {
+        const bgColor = window.getComputedStyle(x, null).getPropertyValue("background-color");
+        x.addEventListener('mouseover', function handleMouseOver() {
+        x.style.backgroundColor = 'rgb(0,154,0, 0.22)';});
+        x.addEventListener('mouseout', function handleMouseOver() {
+        x.style.backgroundColor = bgColor;
+        x.style.transition = '0.3s'});
+    });
+
+    const deletedElelemnt = document.querySelectorAll('[deletedelement]');
+    deletedElelemnt.forEach( x => {
+        const bgColor = window.getComputedStyle(x, null).getPropertyValue("background-color");
+        x.addEventListener('mouseover', function handleMouseOver() {
+        x.style.backgroundColor = 'rgb(255,21,0, 0.34)';});
+        x.addEventListener('mouseout', function handleMouseOver() {
+            x.style.backgroundColor = bgColor;
+        x.style.transition = '0.3s'});
+    });
 </script>
 
 <div class="omdb-main-view-wrapper">
