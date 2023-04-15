@@ -2,6 +2,7 @@
     import UploadFiles from "./UploadFiles.svelte";
     import DomCompare from "./DomCompare.svelte";
     import FileCompare from "./FileCompare.svelte";
+    
 
     //import { sourceFile } from "./UploadFiles.svelte";
 
@@ -268,6 +269,10 @@
         justify-content: center;
         flex-flow: column;
         background-color: #ffffff;
+    }
+
+    #validate {
+        transition: 0.3s ease-in;
     }
 
     .omdb-validate {

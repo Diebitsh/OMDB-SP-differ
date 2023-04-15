@@ -29,10 +29,11 @@
     }
 
     footer p {
-        width: 100%;
+        width: 95%;
         background-color: black;
         margin-top: 40px;
         color: white;
         padding: 20px;
+        border-radius: 10px 10px 0px 0px;
     }
 </style>
