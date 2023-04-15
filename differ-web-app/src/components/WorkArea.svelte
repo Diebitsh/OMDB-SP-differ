@@ -12,6 +12,10 @@
 
     function updateMainView() {
         mainView = views[currentView];
+        const elem = document.getElementsByClassName("stat-block-name");
+        for (let i =0; i <elem.length; i++){
+            elem[i].style.display = "none";
+        } 
     }
 
     function goToUpload() {
@@ -113,11 +117,18 @@
 
     function toggleStatistics() {
         const menu = document.getElementById("stat-menu");
+        const elem = document.getElementsByClassName("stat-block-name");
         if (menu.style.width >= "24%") {
             menu.style.width = "0%"
+            for (let i =0; i <elem.length; i++){
+                elem[i].style.display = "none";
+            } 
         }
         else {
             menu.style.width = "25%"
+            for (let i =0; i <elem.length; i++){
+                elem[i].style.display = "block";
+            } 
         }
     }
 
@@ -178,33 +189,54 @@
         <div class="omdb-main-area">
             <div class="omdb-statistics-wrapper" id="stat-menu">
                 <div class="omdb-statistics">
+                    <p class="stat-block-name">Файлы</p>
                     <div class="omdb-stat-block omdb-files-name">
-                        <p class="stat-block-name">Файлы</p>
                         <div class="omdb-stat-block-container">
-                            <p class="omdb-stat-file-names">{#if sourceFile}SOURCE: {sourceFile[0].name}{:else }SOURCE-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
-                            <p class="omdb-stat-file-names">{#if destFile}DESTINATION: {destFile[0].name}{:else }DESTINATION-ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                            <p class="omdb-stat-file-names">{#if sourceFile}SOURCE: {sourceFile[0].name}{:else }SOURCE: ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                            <p class="omdb-stat-file-names">{#if destFile}DESTINATION: {destFile[0].name}{:else }DESTINATION: ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
                         </div>
                     </div>
+                    <p class="stat-block-name">Изменено</p>
                     <div class="omdb-stat-block omdb-modified-stat">
-                        <p class="stat-block-name">Изменено</p>
                         <div class="omdb-stat-block-container">
-                            
+
+                            <div class="omdb-tag omdb-modified-tag">
+                                <p class="omdb-tag-line">
+                                    <span class="tag-name">A</span>
+                                    <span class="file-name">1-dst.html</span>
+                                </p>
+                            </div>
+
                         </div>
                     </div>
+                    <p class="stat-block-name">Добавлено</p>
                     <div class="omdb-stat-block omdb-added-stat">
-                        <p class="stat-block-name">Добавлено</p>
                         <div class="omdb-stat-block-container">
-                            
+
+                            <div class="omdb-tag omdb-added-tag">
+                                <p class="omdb-tag-line">
+                                    <span class="tag-name">A</span>
+                                    <span class="file-name">1-dst.html</span>
+                                </p>
+                            </div>
+
                         </div>
                     </div>
+                    <p class="stat-block-name">Удалено</p>
                     <div class="omdb-stat-block omdb-delted-stat">
-                        <p class="stat-block-name">Удалено</p>
                         <div class="omdb-stat-block-container">
+
+                            <div class="omdb-tag omdb-deleted-tag">
+                                <p class="omdb-tag-line">
+                                    <span class="tag-name">A</span>
+                                    <span class="file-name">1-dst.html</span>
+                                </p>
+                            </div>
                             
                         </div>
                     </div>
+                    <p class="stat-block-name">Дополнительно</p>
                     <div class="omdb-stat-block omdb-time-stat">
-                        <p class="stat-block-name">Дополнительно</p>
                         <div class="omdb-stat-block-container">
                             
                         </div>
@@ -380,11 +412,12 @@
     .stat-block-name {
         margin-top: 5px;
         margin-bottom: 5px;
-        margin-left: 5px;
+        margin-left: 15px;
         padding: 5px;
         border-top: 1px solid rgb(226, 226, 226);
         border-bottom: 1px solid rgb(226, 226, 226);
         font-weight: 600;
+        width: 100%;
     }
 
     .omdb-stat-block-container {
@@ -394,7 +427,7 @@
         overflow-y: auto;
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
+        align-items: flex-start;
     }
 
     .omdb-stat-block::-webkit-scrollbar-track
@@ -433,9 +466,42 @@
         font-weight: bold;
         width: 100%;
         font-size: 12px;
-        margin-left: 10px;
+        margin-left: 5px;
         background-color: #f4f4f4;
         padding: 10px;
         border-radius: 20px;
+        margin-top: 10px;
+    }
+
+    .omdb-tag {
+        background-color: #0F62FE;
+        padding: 10px;
+        border-radius: 100px;
+        margin-top: 10px;
+        margin-left: 10px;
+        color: black;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .tag-name {
+        padding-right: 10px;
+        border-right: 2px solid black;
+    }
+
+    .file-name {
+        margin-left: 10px;
+    }
+
+    .omdb-modified-tag {
+        background-color: #e8dbfa;
+    }
+
+    .omdb-added-tag {
+        background-color: #a7f0b8;
+    }
+
+    .omdb-deleted-tag {
+        background-color: #fed9d6;
     }
 </style>

@@ -8,7 +8,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="omdb-main-upload-files-wrapper">
+<div class="omdb-main-upload-files-wrapper" on:click={ () => console.log(sourceFile)}>
     <div class="omdb-main-upload-files" id="main-view">
         <div class="omdb-upload-file-wrapper" >
             <label class="input-file">
