@@ -3,29 +3,36 @@
 </script>
 
 
-<header>
-
-</header>
-
 <WorkArea></WorkArea>
 
 <footer>
-
+    <img class="file-icon" src="./static/omdb-logo-footer.svg"/>
+    <p>СПЕЦИАЛЬНО ДЛЯ FRANK BATTLE 2023</p>
 </footer>
 
 <style>
     
-    header {
-        background-color: blue;
-        width: 100%;
-        height: 50px;
-        color: white;
-    }
     footer {
-        background-color: blue;
+        background-color: rgb(255, 255, 255);
         width: 100%;
         height: 200px;
+        color: rgb(0, 0, 0);
+        margin-top: 40px;
+        display: flex;
+        flex-flow: column;
+        
+    }
+
+    footer img {
+        height: 100px;
+        width: auto;
+    }
+
+    footer p {
+        width: 100%;
+        background-color: black;
+        margin-top: 40px;
         color: white;
-        margin-top: 0px;
+        padding: 20px;
     }
 </style>

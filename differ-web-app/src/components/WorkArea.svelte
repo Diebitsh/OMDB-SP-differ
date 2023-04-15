@@ -12,10 +12,6 @@
 
     function updateMainView() {
         mainView = views[currentView];
-        const elem = document.getElementsByClassName("stat-block-name");
-        for (let i =0; i <elem.length; i++){
-            elem[i].style.display = "none";
-        } 
     }
 
     function goToUpload() {
@@ -238,7 +234,8 @@
                     <p class="stat-block-name">Дополнительно</p>
                     <div class="omdb-stat-block omdb-time-stat">
                         <div class="omdb-stat-block-container">
-                            
+                            <p class="omdb-stat-file-names">{#if sourceFile}{sourceFile[0].name}   ({sourceFile[0].size} байт){/if}</p>
+                            <p class="omdb-stat-file-names">{#if destFile}{destFile[0].name}   ({destFile[0].size} байт){/if}</p>
                         </div>
                     </div>
                 </div>
@@ -385,7 +382,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: 0.01s ease-out;
         box-shadow:  8px 0px 6px -10px rgba(0, 0, 0, 0.84);
         color: #696969;
 
@@ -417,7 +413,8 @@
         border-top: 1px solid rgb(226, 226, 226);
         border-bottom: 1px solid rgb(226, 226, 226);
         font-weight: 600;
-        width: 100%;
+        width: 90%;
+        display: none;
     }
 
     .omdb-stat-block-container {
