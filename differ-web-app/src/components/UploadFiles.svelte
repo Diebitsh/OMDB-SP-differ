@@ -12,7 +12,7 @@
     <div class="omdb-main-upload-files" id="main-view">
         <div class="omdb-upload-file-wrapper" >
             <label class="input-file">
-                <input type="file" name="file" bind:files={sourceFile} >		
+                <input type="file" name="file" accept=".html" required bind:files={sourceFile} >		
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <img class="file-icon" src="./static/add-file.svg" height="150px" width="150px" />
                 <label for="src">SOURCE FILE</label>
@@ -22,7 +22,7 @@
 
         <div class="omdb-upload-file-wrapper">
             <label class="input-file">
-                <input type="file" name="file" bind:files={destFile}>		
+                <input type="file" name="file" accept=".html" required bind:files={destFile}>		
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <img class="file-icon" src="./static/add-file.svg" height="150px" width="150px" />
                 <label for="dest">DESTINATION FILE</label>
