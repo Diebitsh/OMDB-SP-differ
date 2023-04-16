@@ -3,79 +3,121 @@ import { ViewableLine } from "../models/file-differ.models";
 
 export class HtmlGeneratorService {
     
-    public static createHtmlView(
-      lines: ViewableLine[], 
-      startTime: number, 
-      endTime: number,
-      sourceFileName: string,
-      destFileName: string
-      ) : string {
-
+    public static createHtmlView(lines: ViewableLine[]) : string {
         let result: Html = new Html();
         const table: Table = new Table();
 
-        let addedCount = 0;
-        let deletedCount = 0;
-        let equalsCount = 0;
+        let i = 0; let y = 0;
+        
+        for (let line of lines.reverse().filter(x => x.NewLine?.LineIndex != 0 && x.OldLine?.LineIndex != 0)) {
+          
+          if (line.OldLine?.LineIndex) {
+            if (table.rows.some(y => y.cells.some(z => z.content == (Number(line.OldLine?.LineIndex) + i).toString())))
+            {
+              continue;
+            }
 
-        for (var line of lines.reverse()) {
+            const oldLineNumberTd: TableCell = new TableCell((line.OldLine?.LineIndex).toString() ?? "");
+            const oldLineContentTd: TableCell = new TableCell(line.OldLine?.LineValue ?? "");
+            
+            oldLineContentTd.style = line.getLineColor();
 
-          switch (line.EditType) {
-            case "inserted": {
-              let newLineNumberTd: TableCell = new TableCell(line.NewLine?.LineIndex.toString() ?? "");
-              newLineNumberTd.style = 'added-number';
-  
-              let newLineContentTd: TableCell = new TableCell(line.NewLine?.LineValue ?? "");
+            let newLineNumberTd: TableCell = new TableCell("");
+            let newLineContentTd: TableCell = new TableCell("");
+            
+            if (line.NewLine?.LineIndex) {
+              newLineNumberTd = new TableCell((line.NewLine?.LineIndex).toString() ?? "");
+              newLineContentTd = new TableCell(line.NewLine?.LineValue ?? "");
               newLineContentTd.style = line.getLineColor();
-  
-              let oldLineNumberTd: TableCell = new TableCell("");
-              oldLineNumberTd.style = "empty-number";
-  
-              let oldLineContentTd: TableCell = new TableCell("");
-              oldLineContentTd.style = "empty";
-              
-              const tr: TableRow = new TableRow([oldLineNumberTd, oldLineContentTd, newLineNumberTd, newLineContentTd],);
-              table.rows.push(tr);
-              addedCount++;
-              break;
+            } else {
+              let newLineIndex = lines.findIndex(x => x.NewLine?.LineIndex == Number(line.OldLine?.LineIndex));
+              if (newLineIndex >= 0) {
+                let newLine = lines[newLineIndex];
+                if (newLine.EditType === "inserted") {
+                  newLineNumberTd = new TableCell(newLine.NewLine?.LineIndex.toString() ?? "");
+                  newLineContentTd = new TableCell(newLine.NewLine?.LineValue ?? "");
+                  newLineContentTd.style = newLine.getLineColor();
+                } else if (newLine.EditType === "equals") {
+                  var updatedIndex = lines.findIndex(x => x.NewLine?.LineIndex == (Number(line.OldLine?.LineIndex) - i))
+                  var updatedLine = lines[updatedIndex];
+                  newLineNumberTd = new TableCell(updatedLine.NewLine?.LineIndex.toString() ?? "");
+                  newLineContentTd = new TableCell(updatedLine.NewLine?.LineValue ?? "");
+                  if (!updatedLine.OldLine) {
+                    newLineContentTd.style = updatedLine.getLineColor();
+                  }
+                  else {
+                    newLineNumberTd.content = "";
+                    newLineContentTd.content = "";
+                    newLineContentTd.style = "grey";
+                  }
+                  
+                  i++;
+                }
+              } else {
+                newLineNumberTd.style = "grey";
+                newLineNumberTd.style = "grey";
+              }
             }
-            case "deleted": {
-              let newLineNumberTd: TableCell = new TableCell("");
-              newLineNumberTd.style = "empty-number";
-  
-              let newLineContentTd: TableCell = new TableCell("");
-              newLineContentTd.style = "empty";
-  
-              let oldLineNumberTd: TableCell = new TableCell(line.OldLine?.LineIndex.toString() ?? "");
-              oldLineNumberTd.style = "deleted-number";
-  
-              let oldLineContentTd: TableCell = new TableCell(line.OldLine?.LineValue ?? "");
+
+            const tr: TableRow = new TableRow([oldLineNumberTd, oldLineContentTd, newLineNumberTd, newLineContentTd]);
+            table.rows.push(tr);
+
+          } else if (line.NewLine?.LineIndex) {
+            if (table.rows.some(x => x.cells.some(z => z.content == (Number(line.NewLine?.LineIndex)).toString())))
+            {
+              continue;
+            }
+            const newLineNumberTd: TableCell = new TableCell((line.NewLine?.LineIndex).toString() ?? "");
+            const newLineContentTd: TableCell = new TableCell(line.NewLine?.LineValue ?? "");
+            
+            newLineContentTd.style = line.getLineColor();
+
+            let oldLineNumberTd: TableCell = new TableCell(""); 
+            let oldLineContentTd: TableCell = new TableCell("");
+            
+            if (line.OldLine?.LineIndex) {
+              oldLineNumberTd = new TableCell(line.OldLine?.LineIndex.toString() ?? "");
+              oldLineContentTd = new TableCell(line.OldLine?.LineValue ?? "");
               oldLineContentTd.style = line.getLineColor();
-              
-              const tr: TableRow = new TableRow([oldLineNumberTd, oldLineContentTd, newLineNumberTd, newLineContentTd]);
-              table.rows.push(tr);
-              deletedCount++;
-              break;
+            } else {
+              let oldLineIndex = lines.findIndex(x => x.OldLine?.LineIndex == Number(line.NewLine?.LineIndex));
+              if (oldLineIndex >= 0) {
+                let oldLine = lines[oldLineIndex];
+                if (oldLine.EditType === "deleted") { 
+                  var updatedIndex = lines.findIndex(x => x.OldLine?.LineIndex == (Number(line.NewLine?.LineIndex) - y))
+                  var updatedLine =lines[updatedIndex];
+                  if (!updatedLine) {
+                    oldLineNumberTd = new TableCell(oldLine.OldLine?.LineIndex.toString() ?? "");
+                    oldLineContentTd = new TableCell(oldLine.OldLine?.LineValue ?? "");
+                    oldLineContentTd.style = oldLine.getLineColor();
+                  }
+                  else {
+                    oldLineNumberTd = new TableCell(updatedLine.NewLine?.LineIndex.toString() ?? "");
+                    oldLineContentTd = new TableCell(updatedLine.NewLine?.LineValue ?? "");
+                    if (!updatedLine.OldLine) {
+                      oldLineContentTd.style = updatedLine.getLineColor();
+                    }
+                    else {
+                      oldLineContentTd.content = "";
+                      oldLineContentTd.content = "";
+                      oldLineContentTd.style = "grey";
+                    }
+                  }
+                  y++;
+                } else if (oldLine.EditType === "inserted") {
+                  oldLineNumberTd = new TableCell("");
+                  oldLineContentTd = new TableCell("");
+                  oldLineContentTd.style = "grey";
+                  y++;
+                }
+              } else {
+                oldLineContentTd.style = "grey";
+                oldLineContentTd.style = "grey";
+              }
             }
-            case "equals": {
-              let newLineNumberTd: TableCell = new TableCell(line.NewLine?.LineIndex.toString() ?? "");
-              newLineNumberTd.style = "equals-number";
 
-              let newLineContentTd: TableCell = new TableCell(line.NewLine?.LineValue ?? "");
-              newLineContentTd.style = line.getLineColor();
-
-              let oldLineNumberTd: TableCell = new TableCell(line.OldLine?.LineIndex.toString() ?? "");
-              oldLineNumberTd.style = "equals-number";
-
-              let oldLineContentTd: TableCell = new TableCell(line.OldLine?.LineValue ?? "");
-              oldLineContentTd.style = line.getLineColor();
-              
-              const tr: TableRow = new TableRow([oldLineNumberTd, oldLineContentTd, newLineNumberTd, newLineContentTd]);
-              table.rows.push(tr);
-              equalsCount++;
-              break;
-            }
-            default: break
+            const tr: TableRow = new TableRow([oldLineNumberTd, oldLineContentTd, newLineNumberTd, newLineContentTd]);
+            table.rows.push(tr);
           }
         }
 
@@ -83,40 +125,6 @@ export class HtmlGeneratorService {
         
         let resultHtmlString: string = "";
 
-        resultHtmlString += `<html>
-        <head>
-            <link rel="stylesheet" href="${'./style.css'}">
-            <script src="${'./highlight.min.js'}"></script>
-            <script>hljs.highlightAll();</script>
-        </head>`
-        resultHtmlString += `<body>`;
-        resultHtmlString += `
-    <header>
-        <p class="logo">$$$OMDB SOFT PRODUCTS$$$</p>
-    </header>
-  `
-  resultHtmlString += `<div class="main-view">`
-  resultHtmlString += `<div class="pre-wrapper">`;
-  resultHtmlString += `
-  <div class="differ-header">
-      <div class="info">
-        <div class="header-block statistic">
-
-          <div class="file-names">
-            <p class="file-name">${sourceFileName} /</p>
-            <p class="file-name2">${destFileName}</p>
-          </div>
-          
-          <div class="changes">
-            <div class="chng-block chng-ins"><p>${addedCount} +</p></div>
-            <div class="chng-block chng-del"><p>${deletedCount} -</p></div>
-            <div class="chng-block chng-equ"><p>${equalsCount} =</p></div>
-          </div>
-
-          <p class="time-label">Время работы программы: ${(endTime - startTime) / 1000} сек.</p>
-        </div>
-      </div>
-  </div>`;
         resultHtmlString += `<pre>`;
         resultHtmlString += `<table>`;
         for (let tr of result.table.rows) {
@@ -131,14 +139,7 @@ export class HtmlGeneratorService {
 
         resultHtmlString += `</table>`;
         resultHtmlString += `</pre>`;
-        resultHtmlString += `</div>`;
-        resultHtmlString += `</div>`;
-       resultHtmlString += `
-       <footer>
-         <p>Специально для Frank Battle 2023</p>
-       </footer>`
-        resultHtmlString += `</body>`;
-
+    
         return resultHtmlString;
     }
 }

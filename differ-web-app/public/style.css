@@ -103,7 +103,9 @@
           }
 
           td:nth-child(even) {
-            word-break: break-all;
+			  word-wrap: break-word;
+    word-break: break-all;
+    white-space: normal;
           }
           
           td {

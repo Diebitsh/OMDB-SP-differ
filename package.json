@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc"
+    "build": "npx tsc",
+    "startWebApp": "cd .\\differ-web-app && yarn dev",
+    "startApp": "npm run build && node ./lib/server.js"
   },
   "keywords": [],
   "author": "",

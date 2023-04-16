@@ -2,8 +2,9 @@
     import UploadFiles from "./UploadFiles.svelte";
     import DomCompare from "./DomCompare.svelte";
     import FileCompare from "./FileCompare.svelte";
+    import { ResultHtmlInfo } from "../models/result-html-info.model";
     
-
+    let isLoaded = false;
     //import { sourceFile } from "./UploadFiles.svelte";
 
     const views = [UploadFiles, DomCompare, FileCompare];
@@ -36,7 +37,6 @@
 
     let sourceFile = null;
     let destFile = null;
-    let isWithStyle = false;
 
     let sourceFileText = null;
     let destFileText = null;
@@ -61,6 +61,9 @@
     async function compareFilesRequest(addres) {
         const res = await fetch(addres, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 sourceFileText,
                 destFileText,
@@ -69,21 +72,28 @@
         });
 
         const jsonResult = await res.json();
-        result = json;
+        
+        var resModel = Object.assign(new ResultHtmlInfo(), jsonResult);
+        result = isStyleContains ? resModel.Styles + resModel.Body : resModel.Body;
+        
+        isLoaded = true;
     }
 
 
     //преобразовать файлы в плэинтекст
-    function comapreDomWithStyles(isWithStyle) {
+    async function comapreDomWithStyles(withStyles) {
+        isLoaded = false;
+
         if (sourceFile === null || destFile === null) {
-            document.getElementById("validate").style.display = "block"
+            document.getElementById("validate").style.display = "block";
+            isLoaded = true;
             return;
         }
         else {
             
-            sourceFileText = castHtmlFileToTextPlain(sourceFile[0]);
-            destFileText = castHtmlFileToTextPlain(destFile[0]);
-            isStyleContains = isWithStyle;
+            sourceFileText = await castHtmlFileToTextPlain(sourceFile[0]);
+            destFileText = await castHtmlFileToTextPlain(destFile[0]);
+            isStyleContains = withStyles;
 
             goToDomDiffer()
 
@@ -91,16 +101,18 @@
         }
     }
 
-    function comapreFiles() {
+    async function comapreFiles() {
+        isLoaded = false;
+
         if (sourceFile === null || destFile === null) {
             document.getElementById("validate").style.display = "block"
+            isLoaded = true;
             return;
         }
         else {
             
-            sourceFileText = castHtmlFileToTextPlain(sourceFile[0]);
-            destFileText = castHtmlFileToTextPlain(destFile[0]);
-            isStyleContains = isWithStyle;
+            sourceFileText = await castHtmlFileToTextPlain(sourceFile[0]);
+            destFileText = await castHtmlFileToTextPlain(destFile[0]);
 
             goToFileDiffer()
 
@@ -132,23 +144,6 @@
 </script>
 
 <workarea>
-    <!-- <div>
-        
-        <form action="http://localhost:80/api/compare" enctype="multipart/form-data" on:submit|preventDefault={handleSubmit}>
-    
-            <label for="src">Старый файл</label>
-            <input id="src" name="src" type="file" accept=".html" required>
-    
-            <label for="dest">Новый файл</label>
-            <input id="dest" name="dest" type="file" accept=".html" required>
-            
-            <input type="submit" value="Сравнить" />
-        </form>
-    
-    </div>
-    
-    {@html resultHtml} -->
-
     <div  id="validate" style="display: none;" >
         <div class="omdb-validate">
             <p>Файлы не загружены</p>
@@ -168,11 +163,11 @@
                     </button>
                 </div>
                 <div class="omdb-main-inputs">
-                    <button class="omdb-diff-func" on:click={comapreDomWithStyles}>
+                    <button class="omdb-diff-func" on:click={() => comapreDomWithStyles(true)}>
                         <img class="file-icon" src="./static/compare-dom.svg" />
                         <p></p>
                     </button>
-                    <button class="omdb-diff-func" on:click={comapreDomWithStyles}>
+                    <button class="omdb-diff-func" on:click={() => comapreDomWithStyles(false)}>
                         <img class="file-icon" src="./static/compare-no-styles.svg"/>
                         <p></p>
                     </button>
@@ -246,12 +241,14 @@
             <!-- {#if mainView == views[currentView]}
                 <svelte:component this={mainView} ></svelte:component>
             {/if} -->
-            {#if currentView == 0}
+            {#if currentView == 0 }
             <UploadFiles bind:sourceFile bind:destFile></UploadFiles>
-            {:else if currentView == 1}
-            <DomCompare bind:result></DomCompare>
+            {:else if currentView == 1 && isLoaded}
+            <DomCompare bind:result && isLoaded></DomCompare>
+            {:else if currentView == 2 && isLoaded}
+            <FileCompare bind:result && isLoaded></FileCompare>
             {:else}
-            <FileCompare bind:result></FileCompare>
+            <span style="display: table; margin: 0 auto;">Загрузка...</span>
             {/if}
         </div>
     </div>

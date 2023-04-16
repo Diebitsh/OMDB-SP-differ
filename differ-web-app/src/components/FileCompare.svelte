@@ -1,15 +1,14 @@
 <script>
     import { fade } from 'svelte/transition';
-
+    
     export let result;
 </script>
 
 <div class="omdb-main-view-wrapper">
     <div class="omdb-main-view" id="main-view">
-
+        {@html result}
     </div>
 </div>
-
 <style>
     .omdb-main-view-wrapper {
         width: 100%;
