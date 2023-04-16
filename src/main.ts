@@ -58,7 +58,7 @@ if (options.compare) {
 
     // console.log(lines);
 
-    createResultHtmlFileDiffer(HtmlGeneratorService.createHtmlView(lines, timeAppStart, timeAppEnd, paths[0], paths[1]),lines,timeAppEnd);
+    createResultHtmlFileDiffer(HtmlGeneratorService.createHtmlView(lines),lines,timeAppEnd);
 
     const sourceFileJSdom = new JSDOM(loadFile(paths[0]));
     const destFileJSdom = new JSDOM(loadFile(paths[1]));
