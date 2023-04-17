@@ -27,7 +27,9 @@ export class MainAppController {
 
         if (files.isStyleContains) {
             styles = destFileJSdom.window.document.querySelector('html')?.innerHTML;
-            styles = styles?.substring(styles.indexOf("<head>")+6, styles.lastIndexOf("</head>"));
+            if (styles) {
+                styles = styles.substring(styles.indexOf("<head>")+6, styles.lastIndexOf("</head>"));
+            }
         }
         else {
             styles = "";

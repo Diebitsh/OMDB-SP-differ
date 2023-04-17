@@ -20,6 +20,9 @@
         currentView = 0
         sourceFile = null;
         destFile = null;
+        chElemns = [];
+        addElems = [];
+        delElems = [];
         updateMainView()
     }
 
@@ -43,6 +46,10 @@
     let isStyleContains = false;
 
     let result;
+
+    let chElemns = [];
+    let addElems = [];
+    let delElems = [];
 
     async function castHtmlFileToTextPlain(file) {
         const reader = new FileReader()
@@ -124,22 +131,14 @@
         document.getElementById("validate").style.display = "none"
     }
 
-    function toggleStatistics() {
-        const menu = document.getElementById("stat-menu");
-        const elem = document.getElementsByClassName("stat-block-name");
-        if (menu.style.width >= "24%") {
-            menu.style.width = "0%"
-            for (let i =0; i <elem.length; i++){
-                elem[i].style.display = "none";
-            } 
-        }
-        else {
-            menu.style.width = "25%"
-            for (let i =0; i <elem.length; i++){
-                elem[i].style.display = "block";
-            } 
-        }
+    function openNav() {
+    document.getElementById("mySidenav").style.width = "650px";
     }
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+  document.getElementById("mySidenav").style.width = "0";
+}
 
 </script>
 
@@ -151,13 +150,14 @@
         </div>
     </div>
 
-    <div class="omdb-work-area-wrapper">
+    <button class="omdb-open-menu" on:click={openNav}>
+        <img class="file-icon" src="./static/menu.svg"/>
+    </button>
+
+    <div class="sidenav" id="mySidenav">
         <div class="omdb-buttons-area-wrapper">
             <div class="omd-button-area">
                 <div class="omdb-stat-toggle">
-                    <button on:click={toggleStatistics}>
-                        <img class="file-icon" src="./static/menu.svg"/>
-                    </button>
                     <button on:click={goToUpload}>
                         <img class="file-icon" src="./static/reload.svg"/>
                     </button>
@@ -178,83 +178,163 @@
                 </div>
             </div>
         </div>
-        <div class="omdb-main-area">
-            <div class="omdb-statistics-wrapper" id="stat-menu">
-                <div class="omdb-statistics">
-                    <p class="stat-block-name">Файлы</p>
-                    <div class="omdb-stat-block omdb-files-name">
-                        <div class="omdb-stat-block-container">
-                            <p class="omdb-stat-file-names">{#if sourceFile}SOURCE: {sourceFile[0].name}{:else }SOURCE: ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
-                            <p class="omdb-stat-file-names">{#if destFile}DESTINATION: {destFile[0].name}{:else }DESTINATION: ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
-                        </div>
-                    </div>
-                    <p class="stat-block-name">Изменено</p>
-                    <div class="omdb-stat-block omdb-modified-stat">
-                        <div class="omdb-stat-block-container">
-
-                            <div class="omdb-tag omdb-modified-tag">
-                                <p class="omdb-tag-line">
-                                    <span class="tag-name">A</span>
-                                    <span class="file-name">1-dst.html</span>
-                                </p>
-                            </div>
-
-                        </div>
-                    </div>
-                    <p class="stat-block-name">Добавлено</p>
-                    <div class="omdb-stat-block omdb-added-stat">
-                        <div class="omdb-stat-block-container">
-
-                            <div class="omdb-tag omdb-added-tag">
-                                <p class="omdb-tag-line">
-                                    <span class="tag-name">A</span>
-                                    <span class="file-name">1-dst.html</span>
-                                </p>
-                            </div>
-
-                        </div>
-                    </div>
-                    <p class="stat-block-name">Удалено</p>
-                    <div class="omdb-stat-block omdb-delted-stat">
-                        <div class="omdb-stat-block-container">
-
-                            <div class="omdb-tag omdb-deleted-tag">
-                                <p class="omdb-tag-line">
-                                    <span class="tag-name">A</span>
-                                    <span class="file-name">1-dst.html</span>
-                                </p>
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <p class="stat-block-name">Дополнительно</p>
-                    <div class="omdb-stat-block omdb-time-stat">
-                        <div class="omdb-stat-block-container">
-                            <p class="omdb-stat-file-names">{#if sourceFile}{sourceFile[0].name}   ({sourceFile[0].size} байт){/if}</p>
-                            <p class="omdb-stat-file-names">{#if destFile}{destFile[0].name}   ({destFile[0].size} байт){/if}</p>
-                        </div>
+        <a style="cursor: pointer" class="closebtn" on:click={closeNav}>&times;</a>
+        <div class="omdb-statistics-wrapper" id="stat-menu">
+            <div class="omdb-statistics">
+                <p class="stat-block-name">Файлы</p>
+                <div class="omdb-stat-block omdb-files-name">
+                    <div class="omdb-stat-block-container">
+                        <p class="omdb-stat-file-names">{#if sourceFile}SOURCE: {sourceFile[0].name}{:else }SOURCE: ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
+                        <p class="omdb-stat-file-names">{#if destFile}DESTINATION: {destFile[0].name}{:else }DESTINATION: ФАЙЛ НЕ ЗАГРУЖЕН{/if}</p>
                     </div>
                 </div>
+                <p class="stat-block-name">Изменено в {#if destFile}{destFile[0].name}{/if}</p>
+                <div class="omdb-stat-block omdb-modified-stat">
+                    <div class="omdb-stat-block-container">
 
+                        {#each chElemns as changed}
+                        <div class="omdb-tag omdb-modified-tag" on:click={ () => changed.scrollIntoView()}>
+                            <p class="omdb-tag-line">
+                                <span class="tag-name">{changed.nodeName}</span>
+                                <span class="file-name">{#if changed.innerText.length >= 10}{changed.innerText.substring(0,10)+'...'}{:else}{changed.innerText}{/if}</span>
+                            </p>
+                        </div>
+                        {/each}
+
+                    </div>
+                </div>
+                <p class="stat-block-name">Добавлено в {#if destFile}{destFile[0].name}{/if}</p>
+                <div class="omdb-stat-block omdb-added-stat">
+                    <div class="omdb-stat-block-container">
+                        
+                        {#each addElems as added}
+                        <div class="omdb-tag omdb-added-tag" on:click={ () => added.scrollIntoView()}>
+                            <p class="omdb-tag-line">
+                                <span class="tag-name">{added.nodeName}</span>
+                                <span class="file-name">{#if added.innerText.length >= 10}{added.innerText.substring(0,10)+'...'}{:else}{added.innerText}{/if}</span>
+                            </p>
+                        </div>
+                        {/each}
+
+                    </div>
+                </div>
+                <p class="stat-block-name">Удалено из {#if sourceFile}{sourceFile[0].name}{/if}</p>
+                <div class="omdb-stat-block omdb-delted-stat">
+                    <div class="omdb-stat-block-container">
+
+                        {#each delElems as deleted}
+                        <div class="omdb-tag omdb-deleted-tag" on:click={ () => deleted.scrollIntoView()}>
+                            <p class="omdb-tag-line">
+                                <span class="tag-name">{deleted.nodeName}</span>
+                                <span class="file-name">{#if deleted.innerText.length >= 10}{deleted.innerText.substring(0,10)+'...'}{:else}{deleted.innerText}{/if}</span>
+                            </p>
+                        </div>
+                        {/each}
+                        
+                    </div>
+                </div>
+                <p class="stat-block-name">Дополнительно</p>
+                <div class="omdb-stat-block omdb-time-stat">
+                    <div class="omdb-stat-block-container">
+                        <p class="omdb-stat-file-names">{#if sourceFile}{sourceFile[0].name}   ({sourceFile[0].size} байт){/if}</p>
+                        <p class="omdb-stat-file-names">{#if destFile}{destFile[0].name}   ({destFile[0].size} байт){/if}</p>
+                    </div>
+                </div>
             </div>
-            
+
+
+            <footer-nav>
+                <img class="file-icon" src="./static/omdb-logo-footer.svg"/>
+                <p>СПЕЦИАЛЬНО ДЛЯ FRANK BATTLE 2023</p>
+            </footer-nav>
+        </div>
+    </div>
+    
+
+    <div class="omdb-work-area-wrapper">
+        <div class="omdb-main-area">
             <!-- {#if mainView == views[currentView]}
                 <svelte:component this={mainView} ></svelte:component>
             {/if} -->
             {#if currentView == 0 }
             <UploadFiles bind:sourceFile bind:destFile></UploadFiles>
             {:else if currentView == 1 && isLoaded}
-            <DomCompare bind:result && isLoaded></DomCompare>
+            <DomCompare bind:chElemns bind:addElems bind:delElems bind:result && isLoaded></DomCompare>
             {:else if currentView == 2 && isLoaded}
             <FileCompare bind:result && isLoaded></FileCompare>
             {:else}
-            <span style="display: table; margin: 0 auto;">Загрузка...</span>
+            <span class="loader"></span>
             {/if}
         </div>
     </div>
 </workarea>
 
 <style>
+
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 5px solid #0F62FE;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+    }
+
+    @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    } 
+
+    .sidenav {
+        height: 100%; 
+        width: 0; 
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #000; 
+        overflow-x: hidden; 
+        padding-top: 60px; 
+        transition: 0.0s; 
+        z-index: 998
+    }
+
+    .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.0s;
+    }
+
+    .sidenav a:hover {
+        color: #f1f1f1;
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+
+    /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+    @media screen and (max-height: 450px) {
+        .sidenav {padding-top: 15px;}
+        .sidenav a {font-size: 18px;}
+    }
+
     workarea {
         /*background-color: bisque;*/
         min-height: 100%;
@@ -295,6 +375,7 @@
     .omdb-work-area-wrapper {
         min-height: 98%;
         min-width: 99%;
+        z-index: 0;
         /*background-color: aqua;*/
     }
 
@@ -371,34 +452,36 @@
     }
 
     .omdb-main-area {
-        min-height: 900px;
+        height: 900px;
         width: 100%;
         /*background-color: rgb(255, 54, 148);*/
         display: flex;
     }
 
+
     .omdb-statistics-wrapper {
-        min-height: 100%;
+        /* min-height: 100%; */
         background-color: #ffffff;
-        width: 0%;
+        width: 100%;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
         box-shadow:  8px 0px 6px -10px rgba(0, 0, 0, 0.84);
         color: #696969;
+        flex-flow: column;
 
     }
 
     .omdb-statistics {
-        width: 95%;
+        width: 100%;
         height: 99%;
         background-color: rgba(221, 221, 221, 0);
-        display: flex;
+        /* display: flex;
         align-items: center;
         justify-content: flex-start;
-        flex-flow: column;
+        flex-flow: column; */
     }
-
+ 
     .omdb-stat-block {
         height: 25%;
         width: 100%;
@@ -416,7 +499,6 @@
         border-bottom: 1px solid rgb(226, 226, 226);
         font-weight: 600;
         width: 90%;
-        display: none;
     }
 
     .omdb-stat-block-container {
@@ -481,6 +563,12 @@
         color: black;
         font-weight: bold;
         font-size: 12px;
+        cursor: pointer;
+        transition: 0.3s ease-in;
+    }
+
+    .omdb-tag:hover {
+        transform: translateY(-5px);
     }
 
     .tag-name {
@@ -502,5 +590,53 @@
 
     .omdb-deleted-tag {
         background-color: #fed9d6;
+    }
+
+    .omdb-open-menu {
+        height: 50px;
+        width: 50px;
+        position: fixed;
+        top: 30px;
+        left: 20px;
+        border-radius: 5px;
+        background-color: #0F62FE;
+        border: none;
+        box-shadow: 0px 0px 5px 3px rgba(24, 24, 24, 0.651);
+        cursor: pointer;
+        z-index: 997;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .omdb-open-menu img {
+        height: 30px;
+        width: auto;
+    }
+
+    footer-nav {
+        background-color: rgb(255, 255, 255);
+        width: 100%;
+        height: 200px;
+        color: rgb(0, 0, 0);
+        margin-top: 40px;
+        display: flex;
+        flex-flow: column;
+        
+    }
+
+    footer-nav img {
+        height: 100px;
+        width: auto;
+    }
+
+    footer-nav p {
+        height: 100px;
+        background-color: black;
+        margin-top: 40px;
+        color: white;
+        padding: 20px;
+        border-radius: 10px 10px 0px 0px;
+        text-align: center;
     }
 </style>

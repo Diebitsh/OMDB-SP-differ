@@ -47,7 +47,7 @@
     }
 
     .omdb-main-upload-files {
-        width: 100%;
+        width: 98%;
         min-height: 100%;
         /*background-color: rgb(71, 255, 163);*/
         border: 1px solid #DBDBDB;

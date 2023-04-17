@@ -7,6 +7,9 @@
     let destFile = null;
 
     export let result = null;
+    export let chElemns = null;
+    export let addElems = null;
+    export let delElems = null;
 
     function makeMobile() {
         document.getElementById("main-view").style.width = "580px";
@@ -19,6 +22,7 @@
     onMount(async() => {
 
         const changedElems = document.querySelectorAll('[changedelement]');
+        chElemns = changedElems;
         changedElems.forEach( x => {
         const curVal =  x.innerText
         x.addEventListener('mouseover', function handleMouseOver() {
@@ -28,6 +32,7 @@
         });
 
         const addedElelemnt = document.querySelectorAll('[newelement]');
+        addElems = addedElelemnt;
         addedElelemnt.forEach( x => {
             const bgColor = window.getComputedStyle(x, null).getPropertyValue("background-color");
             x.addEventListener('mouseover', function handleMouseOver() {
@@ -38,6 +43,7 @@
         });
 
         const deletedElelemnt = document.querySelectorAll('[deletedelement]');
+        delElems = deletedElelemnt;
         deletedElelemnt.forEach( x => {
             const bgColor = window.getComputedStyle(x, null).getPropertyValue("background-color");
             x.addEventListener('mouseover', function handleMouseOver() {
@@ -98,9 +104,9 @@
     }
 
     .omdb-main-view {
-        width: 100%;
+        width: 98%;
         min-height: 96%;
-        background-color: rgba(236, 236, 236, 0.705);
+        background-color: rgb(255, 255, 255);
         transition: 0.3s ease-in-out;
     }
 
